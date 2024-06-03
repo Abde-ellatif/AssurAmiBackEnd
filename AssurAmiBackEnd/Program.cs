@@ -1,7 +1,10 @@
+using AssurAmiBackEnd.Core.Services;
 using AssurAmiBackEnd.Infrastructure.Persistance.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+IServiceCollection services = builder.Services;
 
 // Add services to the container.
 
@@ -12,7 +15,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IClient, ClientImplimentation>();
+
 
 var app = builder.Build();
 
@@ -22,6 +28,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(builder => builder
+    .AllowAnyOrigin()
+    .AllowAnyMethod());
 
 app.UseHttpsRedirection();
 

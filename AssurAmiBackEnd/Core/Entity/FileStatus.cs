@@ -11,7 +11,7 @@ namespace AssurAmiBackEnd.Core.Entity
         public string? StockagePath { get; set; }
         public string? Status { get; set; }
         public string? Remarque { get; set;}
-        public int IdErreur { get; set; }
-        public Erreur erreur { get; set; } = null!;
+        public long ErreurId { get; set; }
+        public Erreur Erreur { get; set; } = null!;
     }
 }

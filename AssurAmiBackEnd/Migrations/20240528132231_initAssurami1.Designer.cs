@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AssurAmiBackEnd.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240514145806_InitAssurAmiV1")]
-    partial class InitAssurAmiV1
+    [Migration("20240528132231_initAssurami1")]
+    partial class initAssurami1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,25 +52,26 @@ namespace AssurAmiBackEnd.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<DateOnly?>("DateFeet")
-                        .HasColumnType("date");
+                    b.Property<long>("AssureurId")
+                        .HasColumnType("bigint");
 
-                    b.Property<DateOnly?>("DateNaissance")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("DateFeet")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateOnly?>("DateSortie")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("DateNaissance")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateSortie")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IdAssureur")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdGestionnaire")
-                        .HasColumnType("int");
+                    b.Property<long>("GestionnaireId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Matricule")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -85,17 +86,17 @@ namespace AssurAmiBackEnd.Migrations
                     b.Property<string>("Telephone")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long?>("assureurId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("code1")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<long?>("gestionnaireId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("code2")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("assureurId");
+                    b.HasIndex("AssureurId");
 
-                    b.HasIndex("gestionnaireId");
+                    b.HasIndex("GestionnaireId");
 
                     b.ToTable("Clients");
                 });
@@ -127,8 +128,8 @@ namespace AssurAmiBackEnd.Migrations
                     b.Property<DateTime?>("DateUpload")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("IdErreur")
-                        .HasColumnType("int");
+                    b.Property<long>("ErreurId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("NomFichier")
                         .HasColumnType("nvarchar(max)");
@@ -142,12 +143,9 @@ namespace AssurAmiBackEnd.Migrations
                     b.Property<string>("StockagePath")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("erreurId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("erreurId");
+                    b.HasIndex("ErreurId");
 
                     b.ToTable("FileStatuses");
                 });
@@ -173,28 +171,32 @@ namespace AssurAmiBackEnd.Migrations
 
             modelBuilder.Entity("AssurAmiBackEnd.Core.Entity.Client", b =>
                 {
-                    b.HasOne("AssurAmiBackEnd.Core.Entity.Assureur", "assureur")
+                    b.HasOne("AssurAmiBackEnd.Core.Entity.Assureur", "Assureur")
                         .WithMany("clients")
-                        .HasForeignKey("assureurId");
+                        .HasForeignKey("AssureurId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("AssurAmiBackEnd.Core.Entity.Gestionnaire", "gestionnaire")
+                    b.HasOne("AssurAmiBackEnd.Core.Entity.Gestionnaire", "Gestionnaire")
                         .WithMany("clients")
-                        .HasForeignKey("gestionnaireId");
+                        .HasForeignKey("GestionnaireId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("assureur");
+                    b.Navigation("Assureur");
 
-                    b.Navigation("gestionnaire");
+                    b.Navigation("Gestionnaire");
                 });
 
             modelBuilder.Entity("AssurAmiBackEnd.Core.Entity.FileStatus", b =>
                 {
-                    b.HasOne("AssurAmiBackEnd.Core.Entity.Erreur", "erreur")
+                    b.HasOne("AssurAmiBackEnd.Core.Entity.Erreur", "Erreur")
                         .WithMany("FileStatuses")
-                        .HasForeignKey("erreurId")
+                        .HasForeignKey("ErreurId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("erreur");
+                    b.Navigation("Erreur");
                 });
 
             modelBuilder.Entity("AssurAmiBackEnd.Core.Entity.Assureur", b =>

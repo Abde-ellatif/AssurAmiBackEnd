@@ -6,8 +6,9 @@ namespace AssurAmiBackEnd.Core.Entity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
-        public string? CodeAssureur {  get; set; }
-        public string? libelet { get; set; }
-        public ICollection<Client>clients { get; set; }=new List<Client>();
+        public string? CodeAssureur { get; set; }
+
+        public string? Libelet { get; set; }
+        public ICollection<Client> Clients { get; set; } = new List<Client>();
     }
 }
