@@ -1,19 +1,16 @@
 ﻿using AssurAmiBackEnd.Core.Entity;
 using AssurAmiBackEnd.Infrastructure.Persistance.Context;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace AssurAmiBackEnd.Core.Services
 {
-    public class ClientImplimentation:IClient
+    public class ClientImplimentation : IClient
     {
         private readonly AppDbContext _context;
-        public IConfiguration _configuration;
-        private InputDateType _dateOnly;
+        private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        //private readonly string DefaultConnectionString = "Data Source=DESKTOP-MRMVJQJ\\SQLEXPRESS;Initial Catalog=assuramii;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
         public ClientImplimentation(IConfiguration configuration, IWebHostEnvironment webHostEnvironment, AppDbContext context)
         {
             _configuration = configuration;
@@ -52,8 +49,7 @@ namespace AssurAmiBackEnd.Core.Services
             if (filepath != null)
             {
 
-                //string connectionString = _configuration.GetConnectionString("connection");
-                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                string? connectionString = _configuration.GetConnectionString("DefaultConnection");
                 using (var connection = new SqlConnection(connectionString))
                 {
                     await connection.OpenAsync();
@@ -78,9 +74,21 @@ namespace AssurAmiBackEnd.Core.Services
 
         }
 
-        public async Task<IEnumerable<Client>> GetAllClientsAsync()
+        public async Task<(IEnumerable<Client> Clients, int TotalCount)> GetAllClientsAsync(int pageNumber, int pageSize)
         {
-            return await _context.Clients.ToListAsync();
+            var totalClients = await _context.Clients.CountAsync();
+            var clients = await _context.Clients
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (clients, totalClients);
         }
+
+
+
+
+
+
     }
 }

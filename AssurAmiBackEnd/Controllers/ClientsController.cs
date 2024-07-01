@@ -1,6 +1,6 @@
-﻿
-using AssurAmiBackEnd.Core.Entity;
+﻿using AssurAmiBackEnd.Core.Entity;
 using AssurAmiBackEnd.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,16 +11,15 @@ namespace AssurAmiBackEnd.Controllers
     [ApiController]
     public class ClientsController : ControllerBase
     {
-        private IClient _clientService;
+        private readonly IClient _clientService;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        //private readonly string DefaultConnectionString = "Data Source=DESKTOP-MRMVJQJ\\SQLEXPRESS;Initial Catalog=Dbassurami;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
         public ClientsController(IWebHostEnvironment webHostEnvironment, IClient clientService)
         {
             _clientService = clientService;
             _webHostEnvironment = webHostEnvironment;
         }
 
-        [HttpPost("/upload")]
+        [HttpPost("upload")]
         public async Task<IActionResult> StoredUploadCsvFile(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -54,11 +53,12 @@ namespace AssurAmiBackEnd.Controllers
         }
 
 
-        [HttpGet("/get-clients")]
-        public async Task<ActionResult<List<Client>>> GetClients()
+        [HttpGet("get-clients")]
+        [Authorize(Roles = "admin,user")]
+        public async Task<IActionResult> GetClients([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
-            var clients = await _clientService.GetAllClientsAsync();
-            return Ok(clients);
+            var (clients, totalCount) = await _clientService.GetAllClientsAsync(pageNumber, pageSize);
+            return Ok(new { clients, totalCount });
         }
     }
 }
