@@ -54,6 +54,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddScoped<IClient, ClientImplimentation>();
 builder.Services.AddScoped<IAuthentification, AuthentificationImplimentation>();
 builder.Services.AddScoped < IUsers,UsersImplementation>();
+builder.Services.AddScoped < IStatus,StatusImplementation>();
 
 builder.Services.AddAuthorization();
 

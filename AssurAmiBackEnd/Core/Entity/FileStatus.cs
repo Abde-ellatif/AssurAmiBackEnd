@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using AssurAmiBackEnd.Core.Entity.Authentification;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AssurAmiBackEnd.Core.Entity
 {
@@ -11,7 +12,8 @@ namespace AssurAmiBackEnd.Core.Entity
         public string? StockagePath { get; set; }
         public string? Status { get; set; }
         public string? Remarque { get; set;}
-        public long ErreurId { get; set; }
-        public Erreur Erreur { get; set; } = null!;
+        public string? ApplicationUserId { get; set; }
+        public ApplicationUser? ApplicationUser { get; set; } = null!;
+
     }
 }

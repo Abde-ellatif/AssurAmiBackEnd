@@ -1,7 +1,7 @@
-﻿using AssurAmiBackEnd.Core.Entity;
-using AssurAmiBackEnd.Core.Services;
+﻿using AssurAmiBackEnd.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,10 +24,14 @@ namespace AssurAmiBackEnd.Controllers
         {
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "File is empty." });
-
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                {
+                     return Unauthorized(new { message = "User ID not found" });
+                }
             try
             {
-                await _clientService.UploadFile(file);
+                await _clientService.UploadFile(file, userId);
                 var directoryPath = Path.Combine(_webHostEnvironment.ContentRootPath, "UploadedFiles");
                 var directoryPathSuccessed = Path.Combine(directoryPath, "SuccessedFile");
                 Directory.CreateDirectory(directoryPathSuccessed);
@@ -38,6 +42,7 @@ namespace AssurAmiBackEnd.Controllers
                 }
                 return Ok(new { message = "uploaded successfully" });
             }
+
             catch (Exception ex)
             {
                 var directoryPath = Path.Combine(_webHostEnvironment.ContentRootPath, "UploadedFiles");
@@ -50,7 +55,11 @@ namespace AssurAmiBackEnd.Controllers
                 }
                 return StatusCode(500, new { message = $"Error: {ex.Message}" });
             }
+
+
+
         }
+
 
 
         [HttpGet("get-clients")]

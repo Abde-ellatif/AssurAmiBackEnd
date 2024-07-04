@@ -165,22 +165,6 @@ namespace AssurAmiBackEnd.Migrations
                     b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("AssurAmiBackEnd.Core.Entity.Erreur", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Erreurs")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Erreurs");
-                });
-
             modelBuilder.Entity("AssurAmiBackEnd.Core.Entity.FileStatus", b =>
                 {
                     b.Property<long>("Id")
@@ -189,11 +173,11 @@ namespace AssurAmiBackEnd.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime?>("DateUpload")
                         .HasColumnType("datetime2");
-
-                    b.Property<long>("ErreurId")
-                        .HasColumnType("bigint");
 
                     b.Property<string>("NomFichier")
                         .HasColumnType("nvarchar(max)");
@@ -209,7 +193,7 @@ namespace AssurAmiBackEnd.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ErreurId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("FileStatuses");
                 });
@@ -387,13 +371,11 @@ namespace AssurAmiBackEnd.Migrations
 
             modelBuilder.Entity("AssurAmiBackEnd.Core.Entity.FileStatus", b =>
                 {
-                    b.HasOne("AssurAmiBackEnd.Core.Entity.Erreur", "Erreur")
+                    b.HasOne("AssurAmiBackEnd.Core.Entity.Authentification.ApplicationUser", "ApplicationUser")
                         .WithMany("FileStatuses")
-                        .HasForeignKey("ErreurId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ApplicationUserId");
 
-                    b.Navigation("Erreur");
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -452,7 +434,7 @@ namespace AssurAmiBackEnd.Migrations
                     b.Navigation("Clients");
                 });
 
-            modelBuilder.Entity("AssurAmiBackEnd.Core.Entity.Erreur", b =>
+            modelBuilder.Entity("AssurAmiBackEnd.Core.Entity.Authentification.ApplicationUser", b =>
                 {
                     b.Navigation("FileStatuses");
                 });

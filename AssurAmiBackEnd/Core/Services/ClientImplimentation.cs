@@ -1,5 +1,6 @@
 ﻿using AssurAmiBackEnd.Core.Entity;
 using AssurAmiBackEnd.Infrastructure.Persistance.Context;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -19,7 +20,7 @@ namespace AssurAmiBackEnd.Core.Services
 
         }
 
-        public async Task UploadFile(IFormFile file)
+        public async Task UploadFile(IFormFile file,string userId)
         {
 
             var directoryPath = Path.Combine(_webHostEnvironment.ContentRootPath, "UploadedFiles");
@@ -35,7 +36,7 @@ namespace AssurAmiBackEnd.Core.Services
             {
                 await file.CopyToAsync(stream);
             }
-            await this.LoadDataClient(filePath); // Await the asynchronous method
+            await this.LoadDataClient(filePath,userId); // Await the asynchronous method
 
 
 
@@ -44,7 +45,7 @@ namespace AssurAmiBackEnd.Core.Services
 
         }
 
-        public async Task LoadDataClient(string filepath)
+        public async Task LoadDataClient(string filepath, string userId)
         {
             if (filepath != null)
             {
@@ -59,6 +60,7 @@ namespace AssurAmiBackEnd.Core.Services
                     {
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@FilePath", filepath);
+                        command.Parameters.AddWithValue("@UserId", userId);
 
                         await command.ExecuteNonQueryAsync();
                         Console.WriteLine("ok");
@@ -73,6 +75,8 @@ namespace AssurAmiBackEnd.Core.Services
             }
 
         }
+
+
 
         public async Task<(IEnumerable<Client> Clients, int TotalCount)> GetAllClientsAsync(int pageNumber, int pageSize)
         {

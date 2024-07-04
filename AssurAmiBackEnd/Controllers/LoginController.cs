@@ -3,11 +3,6 @@ using AssurAmiBackEnd.Core.Entity.Authentification;
 using AssurAmiBackEnd.Core.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.Drawing.Printing;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace AssurAmiBackEnd.Controllers
 {
@@ -20,15 +15,13 @@ namespace AssurAmiBackEnd.Controllers
 
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
-        private readonly IConfiguration _configuration;
         private readonly IAuthentification _authentification;
 
         public LoginController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration, IAuthentification authentification)
+             IAuthentification authentification)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
-            _configuration = configuration;
             _authentification = authentification;  
         }
 
@@ -50,11 +43,18 @@ namespace AssurAmiBackEnd.Controllers
                 {
                     token = result.Token,
                     expiration = result.Expiration,
-                    role = result.Role
+                    role = result.Role,
+                    activateCompte = result.ActivateCompte,
                 });
             }
-
-            return Unauthorized(new { message = "Invalid email or password." });
+            else
+            {
+                return Unauthorized(new
+                {
+                    error = "Invalid login attempt",
+                    activateCompte = result.Success ? true : false  // Utilisation de la valeur réelle en cas d'échec
+                });
+            }
         }
 
 

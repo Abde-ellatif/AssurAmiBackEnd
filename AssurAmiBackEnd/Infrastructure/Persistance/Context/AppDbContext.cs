@@ -20,7 +20,6 @@ namespace AssurAmiBackEnd.Infrastructure.Persistance.Context
         public DbSet<Assureur> Assureurs { get; set; }
         public DbSet<Gestionnaire> Gestionnaires { get; set; }
         public DbSet<Client> Clients { get; set; }
-        public DbSet<Erreur> Erreurs { get; set; }
         public DbSet<FileStatus> FileStatuses { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         

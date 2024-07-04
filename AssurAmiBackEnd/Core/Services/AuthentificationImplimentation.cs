@@ -24,7 +24,7 @@ namespace AssurAmiBackEnd.Core.Services
             _context = context;
         }
 
-        
+
 
         //public async Task<(bool Success, string Token, DateTime Expiration)> Login(string email, string password)
         //{
@@ -66,16 +66,16 @@ namespace AssurAmiBackEnd.Core.Services
 
         //}
 
-        public async Task<(bool Success, string Token, DateTime Expiration, string Role)> Login(string email, string password)
+        public async Task<(bool Success, string Token, DateTime Expiration, string Role, bool ActivateCompte)> Login(string email, string password)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user != null && await _userManager.CheckPasswordAsync(user, password))
+            if (user != null  && await _userManager.CheckPasswordAsync(user, password))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
 
                 if (userRoles.Count == 0)
                 {
-                    return (false, null, DateTime.MinValue, null);
+                    return (false, null, DateTime.MinValue, null, false);
                 }
 
                 var userRole = userRoles[0]; // Assuming each user has only one role
@@ -98,13 +98,14 @@ namespace AssurAmiBackEnd.Core.Services
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                 );
 
-                return (true, new JwtSecurityTokenHandler().WriteToken(token), token.ValidTo, userRole);
+                return (true, new JwtSecurityTokenHandler().WriteToken(token), token.ValidTo, userRole, user.ActivateCompte);
             }
 
-            return (false, null, DateTime.MinValue, null);
+            return (false, null, DateTime.MinValue, null, false);
         }
 
-        
+
+
 
         public async Task<(bool Success, string Message)> RegisterUserAsync(RegisterModel model)
         {
